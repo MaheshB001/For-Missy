@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>for missy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Love+Light&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:        #F6EDE8;
+    --ivory-deep:    #EEDCD4;
+    --wine:          #3B1F2B;
+    --wine-soft:     #6B3F4E;
+    --rose-gold:     #C98A93;
+    --gold:          #C9A46B;
+    --burgundy:      #7A1F3D;
+    --stage-ms: 900ms;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--ivory);
+    color:var(--wine);
+    font-family:'EB Garamond', serif;
+    overflow:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #stage{
+    position:relative;
+    width:100vw; height:100vh; height:100dvh;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    background:
+      radial-gradient(ellipse at 30% 20%, var(--ivory-deep), transparent 60%),
+      radial-gradient(ellipse at 75% 80%, var(--ivory-deep), transparent 55%),
+      var(--ivory);
+  }
+
+  /* ---------- ambient petals (CSS-only, GPU-composited, no per-frame JS) ---------- */
+  .petals{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .petal{
+    position:absolute;
+    top:-8vh;
+    width:var(--s,10px); height:var(--s,10px);
+    border-radius:50% 0 50% 50%;
+    background:var(--gold);
+    opacity:.35;
+    transform:rotate(45deg);
+    animation:drift var(--d,14s) linear infinite;
+    animation-delay:var(--delay,0s);
+    left:var(--l,10%);
+  }
+  @keyframes drift{
+    0%   { transform:translate(0,0) rotate(45deg); opacity:0; }
+    10%  { opacity:.4; }
+    90%  { opacity:.25; }
+    100% { transform:translate(var(--x,20px), 118vh) rotate(220deg); opacity:0; }
+  }
+
+  /* ---------- scene stack ---------- */
+  .scene{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:8vh 8vw;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity var(--stage-ms) ease;
+  }
+
+  #stage[data-stage="gate"]    .scene-gate,
+  #stage[data-stage="fillers"] .scene-fillers,
+  #stage[data-stage="riser"]   .scene-riser,
+  #stage[data-stage="drop"]    .scene-drop{
+    opacity:1; pointer-events:auto;
+  }
+
+  /* ---------- gate ---------- */
+  .eyebrow{
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    letter-spacing:.35em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--wine-soft);
+    margin:0 0 18px;
+  }
+  .gate-line{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:500;
+    font-style:italic;
+    font-size:clamp(28px, 6vw, 48px);
+    line-height:1.25;
+    margin:0 0 46px;
+    color:var(--wine);
+    max-width:14ch;
+  }
+  .gate-sub{
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    font-size:clamp(13px,2.6vw,16px);
+    letter-spacing:.08em;
+    color:var(--wine-soft);
+    margin:22px 0 0;
+  }
+
+  /* gift box: doubles as speaker + gift-open control */
+  .giftbox{
+    position:relative;
+    width:112px; height:110px;
+    border:none; background:transparent; padding:0;
+    cursor:pointer;
+  }
+  .giftbox:focus-visible{ outline:3px solid var(--gold); outline-offset:8px; border-radius:10px; }
+  .giftbox:active .box-base{ transform:translateY(1px); }
+
+  .box-base{
+    position:absolute; left:8px; right:8px; bottom:0; height:60px;
+    background:linear-gradient(155deg, var(--wine-soft), var(--burgundy));
+    border-radius:3px 3px 9px 9px;
+    box-shadow:0 12px 24px rgba(59,31,43,.3), inset 0 1px 2px rgba(255,255,255,.14);
+    overflow:hidden;
+    transition:box-shadow .5s ease, transform .2s ease;
+  }
+  .ribbon-base{
+    position:absolute; left:50%; top:0; bottom:0; width:15px;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg, var(--gold), #b7924f);
+  }
+
+  .box-lid{
+    position:absolute; left:2px; right:2px; top:26px; height:24px;
+    transform-origin:50% 100%;
+    transition:transform .7s cubic-bezier(.6,0,.28,1), opacity .5s ease .1s;
+  }
+  .box-lid::before{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(155deg, var(--burgundy), var(--wine));
+    border-radius:5px;
+    box-shadow:0 6px 12px rgba(59,31,43,.25);
+  }
+  .ribbon-lid{
+    position:absolute; left:50%; top:0; bottom:0; width:15px;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg, var(--gold), #b7924f);
+  }
+
+  .bow{ position:absolute; left:50%; top:-19px; transform:translateX(-50%); width:54px; height:32px; }
+  .bow-loop{
+    position:absolute; top:6px; width:25px; height:21px;
+    background:var(--gold);
+    border-radius:60% 60% 60% 6%;
+  }
+  .bow-loop.left{ left:0; transform:rotate(-16deg); }
+  .bow-loop.right{ right:0; transform:scaleX(-1) rotate(-16deg); }
+  .bow-knot{
+    position:absolute; left:50%; top:13px; transform:translateX(-50%);
+    width:13px; height:13px; border-radius:50%;
+    background:#b7924f;
+  }
+
+  .box-glow{
+    position:absolute; inset:-40% -20% auto -20%; height:140%;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(201,166,107,.55), transparent 65%);
+    opacity:0;
+    transform:scale(.6);
+    pointer-events:none;
+  }
+  .giftbox.opened .box-lid{
+    transform:translateY(-52px) rotate(-26deg);
+    opacity:0;
+  }
+  .giftbox.opened .box-base{
+    box-shadow:0 6px 14px rgba(59,31,43,.16);
+  }
+  .giftbox.opened .box-glow{
+    animation:boxGlow .9s ease forwards;
+  }
+  @keyframes boxGlow{
+    0%   { opacity:0; transform:scale(.5); }
+    40%  { opacity:1; transform:scale(1.05); }
+    100% { opacity:0; transform:scale(1.5); }
+  }
+
+  /* ---------- filler messages ---------- */
+  .filler-line{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:clamp(20px, 4.4vw, 32px);
+    line-height:1.5;
+    color:var(--wine);
+    max-width:20ch;
+    opacity:0;
+    transform:translateY(8px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .filler-line.show{ opacity:1; transform:translateY(0); }
+
+  /* ---------- riser ---------- */
+  .dark-overlay{
+    position:absolute; inset:0;
+    background:var(--wine);
+    opacity:0;
+    transition:opacity 1.1s ease;
+    pointer-events:none;
+  }
+  .dark-overlay.on{ opacity:.86; }
+  .riser-line{
+    position:relative;
+    font-family:'Love Light', cursive;
+    font-weight:400;
+    font-size:clamp(30px, 7vw, 50px);
+    letter-spacing:.03em;
+    color:var(--ivory);
+    animation:breathe 1.9s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{ opacity:.55; transform:scale(1); }
+    50%    { opacity:1;   transform:scale(1.035); }
+  }
+
+  /* ---------- drop ---------- */
+  .burst{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .burst::before, .burst::after{
+    content:"";
+    position:absolute;
+    width:40px; height:40px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,250,244,.9), rgba(201,164,107,.4) 45%, transparent 70%);
+    opacity:0;
+  }
+  .burst.go::before, .burst.go::after{
+    animation:explode 1s cubic-bezier(.15,.8,.3,1) forwards;
+  }
+  .burst.go::after{ animation-delay:.06s; }
+  @keyframes explode{
+    0%   { transform:scale(0);  opacity:1; }
+    70%  { opacity:.5; }
+    100% { transform:scale(22); opacity:0; }
+  }
+  .drop-text{
+    position:relative;
+    font-family:'Love Light', cursive;
+    font-weight:400;
+    font-size:clamp(64px, 18vw, 150px);
+    color:var(--burgundy);
+    margin:0;
+    opacity:0;
+    transform:scale(.85);
+    text-shadow:0 0 26px rgba(201,164,107,.45);
+  }
+  #stage[data-stage="drop"] .drop-text{
+    animation:reveal 1.1s cubic-bezier(.2,.8,.25,1) forwards;
+    animation-delay:.15s;
+  }
+  @keyframes reveal{
+    0%   { opacity:0; transform:scale(.8); }
+    60%  { opacity:1; transform:scale(1.06); }
+    100% { opacity:1; transform:scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .petal{ animation:none; display:none; }
+    .riser-line{ animation:none; }
+    .burst::before, .burst::after{ display:none; }
+    .drop-text, .giftbox.opened .box-glow{ animation:none !important; opacity:1 !important; transform:none !important; }
+    .giftbox.opened .box-lid{ transition:none; }
+    .filler-line{ transition:opacity .3s ease; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage" data-stage="gate">
+
+  <div class="petals" aria-hidden="true">
+    <span class="petal" style="--l:8%;  --s:9px;  --d:16s; --delay:0s;  --x:30px;"></span>
+    <span class="petal" style="--l:22%; --s:6px;  --d:12s; --delay:2s;  --x:-20px;"></span>
+    <span class="petal" style="--l:40%; --s:11px; --d:19s; --delay:5s;  --x:15px;"></span>
+    <span class="petal" style="--l:58%; --s:7px;  --d:14s; --delay:1s;  --x:-30px;"></span>
+    <span class="petal" style="--l:74%; --s:10px; --d:17s; --delay:6s;  --x:10px;"></span>
+    <span class="petal" style="--l:88%; --s:8px;  --d:13s; --delay:3s;  --x:-15px;"></span>
+  </div>
+
+  <section class="scene scene-gate">
+    <p class="eyebrow">for missy</p>
+    <h1 class="gate-line">I'm glad you came,<br>dear.</h1>
+    <button id="giftBtn" class="giftbox" aria-label="Open your gift">
+      <span class="box-lid">
+        <span class="bow" aria-hidden="true">
+          <span class="bow-loop left"></span>
+          <span class="bow-loop right"></span>
+          <span class="bow-knot"></span>
+        </span>
+        <span class="ribbon-lid"></span>
+      </span>
+      <span class="box-base">
+        <span class="ribbon-base"></span>
+      </span>
+      <span class="box-glow"></span>
+    </button>
+    <p class="gate-sub">please open your gift</p>
+  </section>
+
+  <section class="scene scene-fillers">
+    <p id="fillerText" class="filler-line"></p>
+  </section>
+
+  <section class="scene scene-riser">
+    <p class="riser-line">a thousand more....</p>
+  </section>
+
+  <div class="dark-overlay" id="darkOverlay"></div>
+
+  <section class="scene scene-drop">
+    <div class="burst" id="burst" aria-hidden="true"></div>
+    <h2 class="drop-text">love ya</h2>
+  </section>
+
+</div>
+
+<audio id="bgm" preload="auto" playsinline webkit-playsinline>
+  <source src="a-thousand-years.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+(function(){
+  'use strict';
+
+  var stage      = document.getElementById('stage');
+  var giftBtn    = document.getElementById('giftBtn');
+  var bgm        = document.getElementById('bgm');
+  var fillerText = document.getElementById('fillerText');
+  var darkOverlay= document.getElementById('darkOverlay');
+  var burst      = document.getElementById('burst');
+
+  bgm.load();
+
+  // emotional filler copy, evenly spaced across the 14.5s build-up
+  var FILLERS = [
+    { t: 0.0,  text: "I keep starting sentences I don't know how to finish." },
+    { t: 1.6,  text: "So maybe it's easier if I just say it slower, one line at a time." },
+    { t: 3.2,  text: "You make the ordinary parts of my day feel like they matter." },
+    { t: 4.8,  text: "I notice the things you probably think no one notices." },
+    { t: 6.4,  text: "I don't tell you enough how much steadier you make everything feel." },
+    { t: 8.0,  text: "Some days you're the best part, and I never say that out loud." },
+    { t: 9.6,  text: "I think about the small moments more than the big ones." },
+    { t: 11.2, text: "This is me trying to be brave about something soft." },
+    { t: 12.8, text: "Okay. Here it comes." }
+  ];
+
+  var RISER_T = 14.5;
+  var DROP_T  = 21.06;
+
+  var started = false;
+  var startTime = 0; // performance.now() at the moment of the tap — the show's real clock
+  var audioCtx = null, filterNode = null, gainNode = null;
+  var riserTriggered = false, dropTriggered = false;
+  var fillerIndex = -1;
+
+  function setupAudioGraph(){
+    try{
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) throw new Error('no webaudio');
+      audioCtx = new AC();
+      var sourceNode = audioCtx.createMediaElementSource(bgm);
+      filterNode = audioCtx.createBiquadFilter();
+      filterNode.type = 'lowpass';
+      filterNode.frequency.value = 20000; // fully open — no coloration until the riser
+      gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0;
+      sourceNode.connect(filterNode).connect(gainNode).connect(audioCtx.destination);
+      if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+      var now = audioCtx.currentTime;
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(1, now + 1.4);
+    }catch(e){
+      // graceful fallback: skip the low-pass swell, just fade the element volume
+      audioCtx = null; filterNode = null; gainNode = null;
+      bgm.volume = 0;
+      var v = 0;
+      (function fadeStep(){
+        v = Math.min(1, v + 0.05);
+        bgm.volume = v;
+        if(v < 1) requestAnimationFrame(fadeStep);
+      })();
+    }
+  }
+
+  function showFiller(i){
+    fillerText.textContent = FILLERS[i].text;
+    fillerText.classList.remove('show');
+    void fillerText.offsetWidth; // restart the transition
+    fillerText.classList.add('show');
+  }
+
+  function tick(){
+    // driven by wall-clock time since the tap, not bgm.currentTime — the
+    // audio element's own clock can stall/reset on some mobile engines
+    // when it gets rerouted into the Web Audio graph, and that must never
+    // be able to freeze the visual sequence. play() already fires
+    // synchronously on tap, so real playback start is at most ~1 frame
+    // behind this clock in practice.
+    var ct = (performance.now() - startTime) / 1000;
+
+    if(!riserTriggered && ct >= RISER_T){
+      riserTriggered = true;
+      stage.dataset.stage = 'riser';
+      darkOverlay.classList.add('on');
+      if(filterNode){
+        var now = audioCtx.currentTime;
+        filterNode.frequency.cancelScheduledValues(now);
+        filterNode.frequency.setValueAtTime(filterNode.frequency.value, now);
+        filterNode.frequency.exponentialRampToValueAtTime(320, now + (DROP_T - RISER_T));
+      }
+    } else if(!riserTriggered){
+      var idx = 0;
+      for(var i=0;i<FILLERS.length;i++){ if(ct >= FILLERS[i].t) idx = i; }
+      if(idx !== fillerIndex){
+        fillerIndex = idx;
+        showFiller(idx);
+      }
+    }
+
+    if(!dropTriggered && ct >= DROP_T){
+      dropTriggered = true;
+      stage.dataset.stage = 'drop';
+      darkOverlay.classList.remove('on');
+      burst.classList.add('go');
+      if(filterNode){
+        var now2 = audioCtx.currentTime;
+        filterNode.frequency.cancelScheduledValues(now2);
+        filterNode.frequency.setValueAtTime(20000, now2);
+      }
+    }
+
+    if(!dropTriggered){
+      requestAnimationFrame(tick);
+    }
+  }
+
+  giftBtn.addEventListener('click', function(){
+    if(started) return;
+    started = true;
+    startTime = performance.now();
+
+    // play() first and synchronous, nothing awaited ahead of it —
+    // keeps it inside the user gesture for mobile reliability
+    bgm.play().catch(function(){ /* box has already visually opened either way */ });
+
+    setupAudioGraph();
+
+    giftBtn.classList.add('opened');
+    stage.dataset.stage = 'fillers';
+    fillerIndex = -1;
+
+    requestAnimationFrame(tick);
+  });
+
+})();
+</script>
+</body>
+</html>
