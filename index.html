@@ -411,8 +411,8 @@
   // fewer, slower-paced lines — each sits for ~4.8s, comfortably over 4s
   var FILLERS = [
     { t: 0.0,   text: "I keep starting sentences I don't know how to finish." },
-    { t: 4.83,  text: "You make the ordinary parts of my day feel like they matter." },
-    { t: 9.67,  text: "Okay. Here it comes." }
+    { t: 4.83,  text: "Thank you for being my friend... can't put in words how thankful I am" },
+    { t: 9.67,  text: "So I thought I'd let the music do some of the work..." }
   ];
 
   var RISER_T = 14.5;
@@ -552,7 +552,7 @@
       stage.dataset.stage = 'drop';
       darkOverlay.classList.remove('on');
       burst.classList.add('go');
-      lyricize(dropLyrics, 'heart beats fast colors and promises', 2300, 450);
+      lyricize(dropLyrics, 'heart beats fast colors and promises', 0, 450);
       if(filterNode){
         var now2 = audioCtx.currentTime;
         filterNode.frequency.cancelScheduledValues(now2);
